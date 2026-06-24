@@ -4,7 +4,47 @@ import path from "path";
 
 import { analyzeRubric } from "@/lib/gemini";
 
+// In-memory rate limiter — resets on redeploy/cold start, acceptable for low traffic.
+const RATE_LIMIT = 5;
+const WINDOW_MS = 60 * 60 * 1000; // 1 hour
+
+interface RateEntry {
+  count: number;
+  windowStart: number;
+}
+
+const rateLimitMap = new Map<string, RateEntry>();
+
+function getIp(request: NextRequest): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) return forwarded.split(",")[0].trim();
+  return request.headers.get("x-real-ip") ?? "unknown";
+}
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+
+  if (!entry || now - entry.windowStart >= WINDOW_MS) {
+    rateLimitMap.set(ip, { count: 1, windowStart: now });
+    return false;
+  }
+
+  if (entry.count >= RATE_LIMIT) return true;
+
+  entry.count += 1;
+  return false;
+}
+
 export async function POST(request: NextRequest) {
+  const ip = getIp(request);
+  if (isRateLimited(ip)) {
+    return NextResponse.json(
+      { error: "Rate limit exceeded. You may submit up to 5 requests per hour." },
+      { status: 429 },
+    );
+  }
+
   let body: unknown;
   try {
     body = await request.json();
