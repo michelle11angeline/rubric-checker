@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import AnalysisForm from "@/components/AnalysisForm";
+import ResultsView from "@/components/ResultsView";
 import type { RubricAnalysis } from "@/lib/schema";
 
 export default function Home() {
@@ -16,11 +17,7 @@ export default function Home() {
 
       <AnalysisForm onResult={setResult} />
 
-      {result && (
-        <pre className="mt-10 overflow-x-auto rounded-md bg-gray-100 p-4 text-xs dark:bg-gray-800">
-          {JSON.stringify(result, null, 2)}
-        </pre>
-      )}
+      {result && <ResultsView result={result} />}
     </main>
   );
 }
