@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
 
   let systemPrompt: string;
   try {
-    const promptPath = path.join(process.cwd(), "prompts", "v1.md");
+    const promptPath = path.join(process.cwd(), "prompts", "v2.md");
     systemPrompt = await readFile(promptPath, "utf-8");
   } catch {
     return NextResponse.json(
