@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFile } from "fs/promises";
 import path from "path";
 
-import { analyzeRubric } from "@/lib/claude";
+import { analyzeRubric } from "@/lib/gemini";
 
 export async function POST(request: NextRequest) {
   let body: unknown;
