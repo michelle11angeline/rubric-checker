@@ -40,7 +40,7 @@ function CriterionCard({ criterion }: { criterion: CriterionResult }) {
               key={i}
               className="border-l-4 border-gray-300 pl-3 text-sm italic text-gray-600 dark:border-gray-600 dark:text-gray-400"
             >
-              "{quote}"
+              {`"${quote}"`}
             </blockquote>
           ))}
         </div>
